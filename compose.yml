@@ -1,0 +1,69 @@
+services:
+  omekas-site:
+    container_name: ${CONTAINER_SITE_NAME}
+    build:
+      dockerfile: ${BUILDFILE_SITE_NAME}
+    volumes:
+      # localRoute:containerRoute
+      - ${SITE_FILES}:/var/www/html
+      - ${RESOURCE_FILES_DIR}:/var/www/html/files
+      - ./php/php-custom.ini:/usr/local/etc/php/conf.d/99-custom.ini:ro
+    environment:
+      # DOCKER_ENV_VARIABLE=value_env_variable
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m      # Más espacio para debugging
+        max-file: "3"      # Mantener 3 archivos rotados
+    networks:
+      - omekas
+  omekas-nginx:
+    container_name: ${CONTAINER_NGINX_NAME}
+    image: docker.io/nginx:${NGINX_VERSION_TAG}
+    restart: unless-stopped
+    volumes:
+      - ${NGINX_CONFIG}/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ${NGINX_MY_INCLUDE_FILES}:/etc/nginx/my_include_files:ro
+      - ${SITE_FILES}:/var/www/html
+    expose:
+      - "80"
+      - "443"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${NETWORK}"
+
+      # HTTP Router - redirige a HTTPS
+      - "traefik.http.routers.${CONTAINER_NGINX_NAME}-http.entrypoints=web"
+      - "traefik.http.routers.${CONTAINER_NGINX_NAME}-http.rule=Host(`${DEPLOY_DOMAIN}`)"
+      - "traefik.http.routers.${CONTAINER_NGINX_NAME}-http.middlewares=redirect-to-https"
+
+      # HTTPS Router
+      - "traefik.http.routers.${CONTAINER_NGINX_NAME}-https.rule=Host(`${DEPLOY_DOMAIN}`)"
+      - "traefik.http.routers.${CONTAINER_NGINX_NAME}-https.entrypoints=websecure"
+      - "traefik.http.routers.${CONTAINER_NGINX_NAME}-https.tls=true"
+
+      # Middleware para redirección HTTP -> HTTPS
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+    depends_on:
+      - omekas-site
+    networks:
+      - proxy
+      - omekas
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  proxy:
+    name: ${NETWORK}
+    external: true
+  omekas:
+    external: false
