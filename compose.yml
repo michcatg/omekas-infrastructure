@@ -25,15 +25,22 @@ services:
       - omekas
   omekas-nginx:
     container_name: ${CONTAINER_NGINX_NAME}
-    image: docker.io/nginx:${NGINX_VERSION_TAG}
+    #image: docker.io/nginx:${NGINX_VERSION_TAG}
+    image: ${NGINX_IMAGE}:${NGINX_VERSION_TAG}
     restart: unless-stopped
     volumes:
-      - ${NGINX_CONFIG}/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      # - ${NGINX_CONFIG}/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
       - ${NGINX_MY_INCLUDE_FILES}:/etc/nginx/my_include_files:ro
       - ${SITE_FILES}:/var/www/html
+      - ${ERROR_LOGS_DIR}:/var/log/nginx
     expose:
       - "80"
       - "443"
+    environment:
+      - FRONT_DOMAIN=${FRONT_DOMAIN}
+      - STRAPI_DOMAIN=${STRAPI_DOMAIN}
+      - DEPLOY_DOMAIN=${DEPLOY_DOMAIN}
+      - SITE_SERVICE_NAME=${SITE_SERVICE_NAME}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${NETWORK}"

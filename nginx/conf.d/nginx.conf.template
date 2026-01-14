@@ -62,7 +62,7 @@ server {
   location ~ index\.php$ {
     fastcgi_split_path_info ^(.+\.php)(/.+)$;
     # REPLACE with php-fpm service name
-    fastcgi_pass omekas-site:9000;
+    fastcgi_pass ${SITE_SERVICE_NAME}:9000;
     fastcgi_index index.php;
     include fastcgi_params;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
