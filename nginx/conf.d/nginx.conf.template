@@ -1,0 +1,75 @@
+map $http_origin $cors_origin {
+  default "";
+  "~^https?://(${FRONT_DOMAIN}|${STRAPI_DOMAIN})$" $http_origin;
+}
+log_format detailed '$remote_addr - $remote_user [$time_local] '
+                   '"$request" $status $body_bytes_sent '
+                   '"$http_referer" "$http_user_agent" '
+                   'request_length=$request_length '
+                   'request_body_length=$content_length';
+
+server {
+  listen 80;
+  
+  # Replace for domain name
+  server_name ${DEPLOY_DOMAIN};
+    
+  access_log /var/log/nginx/access.log detailed;
+  error_log /var/log/nginx/error.log debug;
+
+  root /var/www/html;
+  index index.php index.html;
+
+  include /etc/nginx/my_include_files/*.conf;
+  
+  # Configuración CORS para múltiples orígenes
+  # Si no hay Origin (navegación directa), permitir el propio host
+  set $final_cors_origin $cors_origin;
+  if ($final_cors_origin = "") {
+    set $final_cors_origin "https://$host";
+  }
+  
+  # Cabeceras CORS - Solo se agregan si hay un origen válido
+  add_header 'Access-Control-Allow-Origin' $final_cors_origin always;
+  add_header 'Access-Control-Allow-Credentials' 'true' always;
+  add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+  add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization' always;
+
+  location / {
+    if ($request_method = OPTIONS) {
+        add_header 'Access-Control-Allow-Origin' $final_cors_origin always;
+        add_header 'Access-Control-Allow-Credentials' 'true';
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+        add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization';
+        return 204;
+    }
+
+    location ~ \.ini$ {
+        deny all;
+    }
+
+    location ~ /\.(?!well-known) {
+        deny all;
+    }
+
+    rewrite ^/(.*)/$ /$1 permanent;
+
+    try_files $uri $uri/ /index.php?$args;
+  }
+
+
+  # pass the PHP scripts to FastCGI server listening on site:9000
+  location ~ index\.php$ {
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+    # REPLACE with php-fpm service name
+    fastcgi_pass omekas-site:9000;
+    fastcgi_index index.php;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+    fastcgi_read_timeout 36000;
+    fastcgi_buffers 16 32k;
+    fastcgi_buffer_size 64k;
+    fastcgi_busy_buffers_size 64k;
+  }
+}

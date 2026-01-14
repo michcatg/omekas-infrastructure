@@ -1,0 +1,15 @@
+# syntax=docker/dockerfile:1
+FROM docker.io/nginx:1.27.1-alpine
+
+# Copia el archivo de configuración de Nginx como plantilla
+COPY ./nginx/conf.d/nginx.conf.template /etc/nginx/conf.d/nginx.conf.template
+
+# Copia los archivos de include personalizados
+COPY ./nginx/my_include_files /etc/nginx/my_include_files
+
+# Copia el script de entrypoint
+COPY ./nginx/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Usa el entrypoint personalizado para reemplazar variables de entorno y arrancar Nginx
+ENTRYPOINT ["/entrypoint.sh"]
