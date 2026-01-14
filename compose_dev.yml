@@ -1,0 +1,7 @@
+services:
+  omekas-nginx:
+    volumes:
+      - ${NGINX_CONFIG}/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ${NGINX_MY_INCLUDE_FILES}:/etc/nginx/my_include_files:ro
+    depends_on:
+      - omekas-site
