@@ -25,5 +25,5 @@ RUN pecl install -o -f imagick\
 RUN apk del --no-cache ${PHPIZE_DEPS}
 
 RUN  apk add --no-cache libzip-dev && docker-php-ext-configure zip  && docker-php-ext-install zip
-
+COPY ./php /usr/local/etc/php
 CMD ["php-fpm"]
