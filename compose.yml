@@ -1,8 +1,7 @@
 services:
   omekas-site:
     container_name: ${CONTAINER_SITE_NAME}
-    build:
-      dockerfile: ${BUILDFILE_SITE_NAME}
+    image: ${CONTAINER_SITE_IMAGE}:${CONTAINER_SITE_TAG}
     volumes:
       # localRoute:containerRoute
       - ${SITE_FILES}:/var/www/html

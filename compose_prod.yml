@@ -1,4 +1,6 @@
 services:
+  omekas-site:
+    restart: unless-stopped
   omekas-nginx:
     restart: unless-stopped
     volumes:
@@ -14,5 +16,5 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: 1000m
-        max-file: "3"
+        max-size: 200m
+        max-file: "50"

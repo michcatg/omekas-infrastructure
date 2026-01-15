@@ -1,7 +1,10 @@
 services:
+  omekas-site:
+    volumes:
+      # localRoute:containerRoute
+      - ./php:/usr/local/etc/php
   omekas-nginx:
     volumes:
+      # localRoute:containerRoute
       - ${NGINX_CONFIG}/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
       - ${NGINX_MY_INCLUDE_FILES}:/etc/nginx/my_include_files:ro
-    depends_on:
-      - omekas-site
