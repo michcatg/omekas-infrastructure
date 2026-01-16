@@ -42,8 +42,6 @@ El despliegue de Omeka-S se realiza construyendo contenedores a partir de las si
   La base de datos requerida por Omeka-S no se despliega con archivos de configuración presentes en este repositorio, ya que, conforme a las bases de la convocatoria, se encuentra en un sistema aislado. No obstante, se puede poner en marcha un contenedor de la imagen de MariaDB en cualquier host accesible desde la red por el servidor de despliegue actual (ver la sección [Despliegue del Sistema manejador de base de datos (opcional)](#despliegue-del-sistema-manejador-de-base-de-datos-opcional)).
   Se deberá considerar la importación de datos si corresponde al caso.
 
----
-
 ## Requisitos
 
 Para el despliegue de Omeka-S es necesario contar con:
@@ -51,7 +49,6 @@ Para el despliegue de Omeka-S es necesario contar con:
 - Docker
 - Docker Compose
 - Acceso a una base de datos compatible con Omeka-S (MySQL/MariaDB)
-- Acceso a un sistema de almacenamiento para archivos digitales
 - Sistema operativo Linux
 - Proxy inverso Traefik debidamente configurado.
 - Dominio (real o de pruebas) para registrar el servicio en el proxy
