@@ -53,6 +53,11 @@ Para el despliegue de Omeka-S es necesario contar con:
 - Acceso a una base de datos compatible con Omeka-S (MySQL/MariaDB)
 - Acceso a un sistema de almacenamiento para archivos digitales
 - Sistema operativo Linux
+- Proxy inverso Traefik debidamente configurado.
+- Dominio (real o de pruebas) para registrar el servicio en el proxy
+
+> **Nota:**   
+> Si se requiere acceder a Omeka-S fuera del contexto de un servidor proxy inverso, será necesario exponer el puerto correspondiente del contenedor para permitir el acceso directo desde el exterior.
 
 ## Instalación y despliegue
 1. Clonar el repositorio   
