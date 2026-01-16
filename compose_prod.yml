@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     volumes:
       # - ${NGINX_CONFIG}/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-      - ${NGINX_MY_INCLUDE_FILES}:/etc/nginx/my_include_files:ro
+      #- ${NGINX_MY_INCLUDE_FILES}:/etc/nginx/my_include_files:ro
     environment:
       - FRONT_DOMAIN=${FRONT_DOMAIN}
       - STRAPI_DOMAIN=${STRAPI_DOMAIN}
